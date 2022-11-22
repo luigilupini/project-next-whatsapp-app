@@ -6,6 +6,15 @@ body {
     Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
 }
 
+body {
+  height: 100vh;
+  background: radial-gradient(
+    at right bottom,
+    rgb(17, 24, 39),
+    rgb(75, 85, 99)
+  );
+}
+
 a {
   color: inherit;
   text-decoration: none;

@@ -7,6 +7,7 @@
 Featuring:
 
 - A [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/api-reference/create-next-app).
+- Using [Material UI](https://mui.com/) library for our React UI components.
 
 Dependencies:
 
