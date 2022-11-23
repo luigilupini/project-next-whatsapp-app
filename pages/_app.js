@@ -35,7 +35,7 @@ function MyApp({ Component, pageProps }) {
       photoUrl: user.photoURL,
     };
     await setDoc(doc(userRef, user.uid), data, { merge: true })
-      .then((userRef) => "Doc was added")
+      .then((userRef) => console.log("User doc was updated"))
       .catch((error) => console.error(error));
   };
 

@@ -6,6 +6,9 @@ const nextConfig = {
     // Enables the styled-components SWC transform
     styledComponents: true,
   },
+  images: {
+    domains: ["lh3.googleusercontent.com", "googleusercontent.com"],
+  },
 };
 
 module.exports = nextConfig;
