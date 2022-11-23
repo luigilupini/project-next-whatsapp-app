@@ -1,13 +1,26 @@
 import styled from "styled-components";
+
 import { Avatar, Button, IconButton } from "@material-ui/core";
 import ChatIcon from "@material-ui/icons/Chat";
 import { MoreVert, Search } from "@material-ui/icons";
 
+// # https://www.npmjs.com/package/email-validator:
+import * as emailValidator from "email-validator";
+import { auth } from "../firebase";
+
 function SideBar() {
+  const createChat = (e) => {
+    const input = prompt("Please enter the user email, you wish to chat with");
+    if (!input) return null;
+    if (emailValidator.validate(input)) {
+      // If valid we need to append chat to firestore!
+    }
+  };
+
   return (
     <Container>
       <Header>
-        <UserAvatar />
+        <UserAvatar onClick={() => auth.signOut()}></UserAvatar>
         <IconsContainer>
           <IconButton>
             <ChatIcon />
@@ -23,9 +36,9 @@ function SideBar() {
         <SearchInput placeholder="Search in chats" />
       </SearchContainer>
 
-      <SidebarButton>Start a new chat</SidebarButton>
+      <SidebarButton onClick={createChat}>Start a new chat</SidebarButton>
 
-      {/* List of active chatting users */}
+      {/* List of chatty users */}
     </Container>
   );
 }
