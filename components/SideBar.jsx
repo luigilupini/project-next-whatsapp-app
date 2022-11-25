@@ -3,7 +3,7 @@ import styled from "styled-components";
 
 import { Avatar, Button, IconButton } from "@material-ui/core";
 import ChatIcon from "@material-ui/icons/Chat";
-import { MoreVert, Search } from "@material-ui/icons";
+import { MoreVert, Search, Sms } from "@material-ui/icons";
 
 // # https://www.npmjs.com/package/email-validator:
 import * as emailValidator from "email-validator";
@@ -25,15 +25,15 @@ function SideBar() {
     const input = prompt("Please enter the user email, you wish to chat with");
     if (!input) return null;
     if (input === user.email) {
-      console.log("🙊 you can't chat with yourself!");
+      console.log("%c 🙊 you can't chat with yourself!", "color: red");
       return; // exit condition
     }
     if (chatAlreadyExist(input)) {
-      console.log("🙊 already a user!");
+      console.log("%c 🙊 already a user!", "color: red");
       return; // exit condition
     }
     if (!emailValidator.validate(input)) {
-      console.log("🙊 email not valid!");
+      console.log("%c 🙊 email not valid!", "color: red");
       return; // exit condition
     }
     // Finally if all is valid, we can then append this chat to firestore!
@@ -41,7 +41,7 @@ function SideBar() {
     await addDoc(chatsRef, {
       users: [user.email, input],
     })
-      .then((chatsRef) => console.log("Chat doc was added"))
+      .then((doc) => console.log("%c addDoc chats", "color: green"))
       .catch((error) => console.error(error));
   };
 
@@ -78,6 +78,7 @@ function SideBar() {
 
       {/* List of chatty users */}
       {chatsSnapshot?.docs.map((chat) => {
+        // console.log(chat.data().users);
         return <Chat key={chat.id} id={chat.id} users={chat.data().users} />;
       })}
     </Container>
@@ -86,20 +87,31 @@ function SideBar() {
 export default SideBar;
 
 const Container = styled.div`
+  flex: 0.5;
   background: white;
+  border-right: 1px solid whitesmoke;
+  height: 100vh;
+  min-width: 300px;
+  max-width: 350px;
+
+  overflow-y: scroll;
+  ::-webkit-scrollbar {
+    display: none;
+  }
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 `;
 
 const Header = styled.div`
   position: sticky;
   top: 0;
-  background-color: white;
   z-index: 1;
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 15px;
   height: 80px;
-  border-bottom: 1px solid whitesmoke;
+  /* border-bottom: 1px solid whitesmoke; */
 `;
 
 const UserAvatar = styled(Avatar)`
@@ -123,6 +135,7 @@ const SearchInput = styled.input`
   outline-width: 0;
   border: none;
   flex: 1;
+  font-size: 12px;
 `;
 
 const SidebarButton = styled(Button)`

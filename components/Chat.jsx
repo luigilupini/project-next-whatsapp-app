@@ -1,3 +1,5 @@
+import { useRouter } from "next/router";
+
 import styled from "styled-components";
 import { Avatar } from "@mui/material";
 
@@ -8,6 +10,7 @@ import { auth, db } from "../firebase";
 import { where, collection, query } from "firebase/firestore";
 
 function Chat({ id, users }) {
+  const router = useRouter();
   const [userLoggedIn] = useAuthState(auth);
 
   // Separate user from logged in user from `chatRef` document
@@ -17,11 +20,17 @@ function Chat({ id, users }) {
   const q = query(usersRef, where("email", "==", recipientEmail));
   const [recipientSnapshot] = useCollection(q);
   // Here we after the recipient with a photoURL:
-  // console.log(recipientSnapshot?.docs?.[0]?.data());
   const recipientPhoto = recipientSnapshot?.docs?.[0]?.data()?.photoUrl;
 
+  // Route to dynamic router under `pages` in folder chat for file `[id].js`
+  const enterChat = () =>
+    router.push({
+      pathname: `/chat/${id}`,
+      query: { users: users },
+    });
+
   return (
-    <Container>
+    <Container onClick={enterChat}>
       {recipientPhoto ? (
         <UserAvatar src={recipientPhoto} />
       ) : (
@@ -46,7 +55,8 @@ const Container = styled.div`
 
   p {
     font-size: 12px;
-    font-weight: 300;
+    font-weight: 400;
+    color: black;
   }
 `;
 

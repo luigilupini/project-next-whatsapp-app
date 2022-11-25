@@ -6,13 +6,13 @@ import { Button } from "@material-ui/core";
 
 /* # https://firebase.google.com/docs/auth/web/google-signin#web-version-9_4:
 `signInWithPopup` authenticates firebase client using a popup-based OAuth flow. If succeeds, returns the signed in user along with the provider's credential. Unsuccessful returns an error object containing info about the error. */
-import { signInWithPopup } from "firebase/auth";
 import { auth, provider } from "../firebase";
+import { signInWithPopup } from "firebase/auth";
 
 function Login() {
   const signIn = async () => {
     await signInWithPopup(auth, provider)
-      .then((result) => console.log(result))
+      .then(() => console.log("%c User signed-in", "color: lightblue"))
       .catch(alert);
   };
 

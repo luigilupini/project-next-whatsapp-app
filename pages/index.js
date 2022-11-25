@@ -1,9 +1,7 @@
 import Head from "next/head";
 import SideBar from "../components/SideBar";
-import { auth } from "../firebase";
 
 export default function Home() {
-  // auth.signOut();
   return (
     <div>
       <Head>
