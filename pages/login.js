@@ -43,7 +43,7 @@ const Container = styled.div`
   display: grid;
   place-items: center;
   height: 100vh;
-  /* background: whitesmoke; */
+  background: #53656f;
 `;
 
 const LoginContainer = styled.div`

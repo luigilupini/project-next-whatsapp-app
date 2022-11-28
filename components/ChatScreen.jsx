@@ -10,10 +10,10 @@ import { useCollection } from "react-firebase-hooks/firestore";
 
 import { Avatar, IconButton } from "@material-ui/core";
 import {
-  AttachFile,
-  InsertEmoticonRounded,
-  MicNoneRounded,
+  EmojiEmotionsOutlined,
+  Mic,
   MoreVert,
+  SearchOutlined,
 } from "@material-ui/icons";
 
 import {
@@ -25,13 +25,17 @@ import {
   serverTimestamp,
   setDoc,
 } from "firebase/firestore";
-import { getRecipientEmail } from "../utils/getRecipientEmail";
 
-function ChatScreen({ recipient, chat, messages }) {
+import TimeAgo from "timeago-react";
+import { useRef } from "react";
+
+function ChatScreen({ messages, recipient }) {
+  const [input, setInput] = useState("");
+  const endOfMessageRef = useRef(null);
   const [user] = useAuthState(auth);
   const router = useRouter();
-  const [input, setInput] = useState("");
 
+  // ! read operation:
   // # [Working with sub-collection to existing doc] (https://stackoverflow.com/questions/70551249/firebase-v9-add-subcollection-to-existing-doc):
   const docRef = doc(db, "chats", router.query.id); // doc in chats collection
   const colRef = collection(docRef, "messages"); // messages sub-collection
@@ -64,7 +68,7 @@ function ChatScreen({ recipient, chat, messages }) {
     }
   };
 
-  // ! update & add operations:
+  // ! update & add operation:
   const sendMessage = async (e) => {
     e.preventDefault();
     const usersRef = collection(db, "users");
@@ -86,24 +90,48 @@ function ChatScreen({ recipient, chat, messages }) {
       .catch((error) => console.error(error));
 
     setInput("");
+    scrollToEnd();
+  };
+
+  const scrollToEnd = () => {
+    endOfMessageRef.current.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
   };
 
   return (
     <Container>
       <Header>
-        <Avatar />
+        {recipient ? (
+          <Avatar src={recipient.photoUrl} referrerPolicy="no-referrer" />
+        ) : (
+          <Avatar>{recipient[0]}</Avatar>
+        )}
 
         <HeaderInformation>
-          <h3>{recipient}</h3>
-          <p>Last seen ...</p>
+          <h3>{recipient.email}</h3>
+          {recipient ? (
+            <p>
+              {" "}
+              Last active:{" "}
+              {recipient?.lastSeen?.toDate() ? (
+                <TimeAgo datetime={recipient.lastSeen.toDate()} />
+              ) : (
+                "Unknown"
+              )}
+            </p>
+          ) : (
+            <p>Loading last active state</p>
+          )}
         </HeaderInformation>
 
         <HeaderIcon>
           <IconButton>
-            <AttachFile />
+            <SearchOutlined style={{ color: "#53656f" }} />
           </IconButton>
           <IconButton>
-            <MoreVert />
+            <MoreVert style={{ color: "#53656f" }} />
           </IconButton>
         </HeaderIcon>
       </Header>
@@ -111,15 +139,19 @@ function ChatScreen({ recipient, chat, messages }) {
       {/* display messages in here: */}
       <MessageContainer>
         {showMessages()}
-        <EndOfMessage />
+        <EndOfMessage ref={endOfMessageRef} />
       </MessageContainer>
       <InputContainer>
-        <InsertEmoticonRounded />
-        <Input value={input} onChange={(e) => setInput(e.target.value)} />
+        <EmojiEmotionsOutlined style={{ color: "#53656f" }} />
+        <Input
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          placeholder="Type a message"
+        />
         <button hidden disabled={!input} type="submit" onClick={sendMessage}>
           Send Message
         </button>
-        <MicNoneRounded />
+        <Mic style={{ color: "#53656f" }} />
       </InputContainer>
     </Container>
   );
@@ -128,35 +160,36 @@ function ChatScreen({ recipient, chat, messages }) {
 export default ChatScreen;
 
 const Container = styled.div`
-  border-right: 1px solid whitesmoke;
-  border-bottom: 1px solid whitesmoke;
+  border-left: 1px solid #d1d7db;
+  border-right: 1px solid #d1d7db;
+  border-bottom: 1px solid #d1d7db;
 `;
 
 const Header = styled.div`
   position: sticky;
-  background: white;
+  background: #f1f2f5;
   color: black;
   z-index: 100;
   top: 0;
   display: flex;
   /* padding: 11px; */
-  padding-left: 5px;
+  padding-left: 15px;
   align-items: center;
   /* justify-content: space-between; */
-  border-bottom: 1px solid whitesmoke;
-  box-shadow: 0px 4px 14px -3px rgb(0, 0, 0, 0.2);
+  /* box-shadow: 0px 4px 14px -3px rgb(0, 0, 0, 0.2); */
 `;
 
 const HeaderInformation = styled.div`
+  padding: 9px;
   flex: 1;
   margin-left: 15px;
   > h3 {
-    /* font-size: 14px; */
+    font-size: 14px;
     margin-bottom: 3px;
   }
   > p {
-    /* margin-top: -1px; */
-    /* font-size: 14px; */
+    margin-top: 6px;
+    font-size: 12px;
     color: gray;
   }
 `;
@@ -168,12 +201,14 @@ const MessageContainer = styled.div`
   min-height: 90vh;
 `;
 
-// Here we auto scroll to this empty container:
-const EndOfMessage = styled.div``;
+// Here we auto scroll to this empty containing placeholder:
+const EndOfMessage = styled.div`
+  margin-bottom: 20px;
+`;
 
 const InputContainer = styled.form`
+  background: #f1f2f5;
   color: gray;
-  background: white;
   position: sticky;
   bottom: 0;
   display: flex;
@@ -183,13 +218,13 @@ const InputContainer = styled.form`
 `;
 
 const Input = styled.input`
+  background: white;
   flex: 1;
   position: sticky;
-  margin: 0px 5px;
+  margin: 0px 15px;
   bottom: 0;
   align-items: center;
   padding: 10px;
-  background: whitesmoke;
   border: none;
   border-radius: 5px;
 `;

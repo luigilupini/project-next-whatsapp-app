@@ -21,6 +21,7 @@ function Loading() {
 export default Loading;
 
 const Wrapper = styled.div`
+  background: #53656f;
   display: flex;
   flex-direction: column;
   justify-content: center;

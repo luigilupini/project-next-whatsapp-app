@@ -6,8 +6,6 @@ import styled from "styled-components";
 import ChatScreen from "../../components/ChatScreen";
 import SideBar from "../../components/SideBar";
 
-import { useAuthState } from "react-firebase-hooks/auth";
-
 import {
   collection,
   doc,
@@ -15,28 +13,48 @@ import {
   getDocs,
   orderBy,
   query,
+  where,
 } from "firebase/firestore";
-import { auth, db } from "../../firebase";
-import { getRecipientEmail } from "../../utils/getRecipientEmail";
+import { db } from "../../firebase";
 
 export default function ChatDetail(serverProps) {
   console.log("%c getServerSideProps (serverProps) ", "color: skyBlue", {
     serverProps, // We JSON parse this into a useable JS object.
   });
+  const [recipient, setRecipient] = useState({});
   const router = useRouter();
-  const [user] = useAuthState(auth);
-  const recipient = getRecipientEmail(router.query.users, user);
+
+  // ! read operation:
+  useEffect(() => {
+    const usersRef = collection(db, "users");
+    const q = query(
+      usersRef,
+      where("email", "==", router.query.recipientEmail)
+    );
+    getDocs(q).then((snap) => {
+      const snapshot = snap.docs.map((doc) => ({
+        ...doc.data(),
+        id: doc.id,
+      }));
+      setRecipient(snapshot[0]);
+    });
+  }, [router.query]);
+
   return (
     <Container>
       <Head>
-        {user ? <title>Chat with {recipient}</title> : <title>Chat</title>}
+        {recipient ? (
+          <title>Chat with {recipient.email}</title>
+        ) : (
+          <title>Chat</title>
+        )}
       </Head>
       <SideBar />
 
       <ChatContainer>
         <ChatScreen
           recipient={recipient}
-          chat={serverProps.chat}
+          chatId={serverProps.chat}
           messages={serverProps.messages}
         />
       </ChatContainer>
@@ -61,13 +79,13 @@ export async function getServerSideProps(context) {
       ...messages,
       timestamp: messages.timestamp.toDate().getTime(),
     }));
-  // console.log("%c getDocs messages collection", "color: green", messages);
+  console.log("%c getDocs messages collection", "color: green", messages);
   const chatSnap = await getDoc(doc(chatRef));
   const chat = {
     ...chatSnap.data(),
     id: chatSnap.id,
   };
-  // console.log("%c getDoc chat document", "color: green", chat);
+  console.log("%c getDoc chat document", "color: green", chat);
   return {
     props: {
       messages: JSON.stringify(messages),
@@ -78,6 +96,7 @@ export async function getServerSideProps(context) {
 
 const Container = styled.div`
   display: flex;
+  /* background: whitesmoke; */
 `;
 const ChatContainer = styled.div`
   color: whitesmoke;

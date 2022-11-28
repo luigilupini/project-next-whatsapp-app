@@ -16,6 +16,7 @@ import { collection, addDoc, where, query } from "firebase/firestore";
 function SideBar() {
   const [user] = useAuthState(auth);
   const userPhoto = user.photoURL;
+  // ! read operation:
   const chatRef = collection(db, "chats");
   const q = query(chatRef, where("users", "array-contains", user.email));
   const [chatsSnapshot] = useCollection(q);
@@ -58,19 +59,23 @@ function SideBar() {
   return (
     <Container>
       <Header>
-        <UserAvatar onClick={() => auth.signOut()} src={userPhoto}></UserAvatar>
+        <UserAvatar
+          onClick={() => auth.signOut()}
+          src={userPhoto}
+          referrerPolicy="no-referrer"
+        />
         <IconsContainer>
           <IconButton>
-            <ChatIcon />
+            <ChatIcon style={{ color: "#53656f" }} />
           </IconButton>
           <IconButton>
-            <MoreVert />
+            <MoreVert style={{ color: "#53656f" }} />
           </IconButton>
         </IconsContainer>
       </Header>
 
       <SearchContainer>
-        <Search />
+        <Search style={{ color: "#53656f" }} />
         <SearchInput placeholder="Search in chats" />
       </SearchContainer>
 
@@ -87,8 +92,8 @@ function SideBar() {
 export default SideBar;
 
 const Container = styled.div`
-  flex: 0.5;
   background: white;
+  flex: 0.5;
   border-right: 1px solid whitesmoke;
   height: 100vh;
   min-width: 300px;
@@ -103,13 +108,14 @@ const Container = styled.div`
 `;
 
 const Header = styled.div`
+  background: #f1f2f5;
   position: sticky;
   top: 0;
   z-index: 1;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 15px;
+  padding: 13px;
   height: 80px;
   /* border-bottom: 1px solid whitesmoke; */
 `;

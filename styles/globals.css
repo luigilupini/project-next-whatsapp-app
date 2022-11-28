@@ -8,11 +8,7 @@ body {
 
 body {
   height: 100vh;
-  background: radial-gradient(
-    at right bottom,
-    rgb(17, 24, 39),
-    rgb(75, 85, 99)
-  );
+  background: radial-gradient(at right bottom, #efeae2, #f3eadc);
   /* background: whitesmoke; */
 }
 

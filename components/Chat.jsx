@@ -26,7 +26,7 @@ function Chat({ id, users }) {
   const enterChat = () =>
     router.push({
       pathname: `/chat/${id}`,
-      query: { users: users },
+      query: { recipientEmail: recipientEmail },
     });
 
   return (
@@ -48,9 +48,10 @@ const Container = styled.div`
   align-items: center;
   padding: 15px;
   word-break: break-word;
+  border-bottom: 1px solid #f1f2f5;
   cursor: pointer;
   :hover {
-    background: rgb(233, 234, 235);
+    background: #f1f2f5;
   }
 
   p {
