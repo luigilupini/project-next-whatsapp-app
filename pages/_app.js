@@ -15,26 +15,29 @@ Next.js uses the `App` component to initialize pages. You can override it and co
 
 `Component` prop is the active page, so whenever you navigate between routes, your `Component` will change to the new page. Therefore, any props you send to `Component` will be received by the page. `pageProps` is an object with initial props that we want preloaded for our page. For example by a data fetch method, otherwise it's an empty object. */
 
+/* # https://www.npmjs.com/package/react-firebase-hooks:
+This library explores how React Hooks can work to make integration with Firebase even more straightforward than it already is.
+
+React Firebase Hooks provides a convenience listener for Firebase Auth `auth` state. The hook wraps around the firebase `auth.onAuthStateChange` method to ensure that it is always up to date. */
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth, db } from "../firebase";
 import { collection, doc, serverTimestamp, setDoc } from "firebase/firestore";
 
+import { Toaster } from "react-hot-toast";
+
 function MyApp({ Component, pageProps }) {
-  /* # https://www.npmjs.com/package/react-firebase-hooks:
-  This library explores how React Hooks can work to make integration with Firebase even more straightforward than it already is.
-  
-  React Firebase Hooks provides a convenience listener for Firebase Auth `auth` state. The hook wraps around the firebase `auth.onAuthStateChange` method to ensure that it is always up to date. */
-  const [user, loading, error] = useAuthState(auth);
+  const [user, loading] = useAuthState(auth);
 
   const addUser = async (user) => {
-    const userRef = collection(db, "users");
+    const usersRef = collection(db, "users");
+    const userRef = doc(usersRef, user.uid);
     let data = {
       userId: user.uid,
       email: user.email,
       lastSeen: serverTimestamp(),
       photoUrl: user.photoURL,
     };
-    await setDoc(doc(userRef, user.uid), data, { merge: true })
+    await setDoc(userRef, data, { merge: true })
       .then((doc) => console.log("%c setDoc user", "color: green"))
       .catch((error) => console.error(error));
   };
@@ -46,7 +49,24 @@ function MyApp({ Component, pageProps }) {
   if (loading) return <Loading />;
   if (!user) return <Login />;
 
-  return <Component {...pageProps} />;
+  return (
+    <div>
+      <Component {...pageProps} />;
+      <Toaster
+        toastOptions={{
+          className: "",
+          style: {
+            fontSize: "12px",
+            fontWeight: "bold",
+            background: "#b4ede9",
+            border: "1px solid #128C7E",
+            padding: "8px",
+            color: "#128C7E",
+          },
+        }}
+      />
+    </div>
+  );
 }
 
 export default MyApp;
